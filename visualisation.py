@@ -6,6 +6,7 @@ import matplotlib.cm as cm
 from matplotlib.patches import RegularPolygon
 import numpy as np
 from person import Person
+
 """
 Design variables
 """
@@ -55,6 +56,12 @@ def plot_lattice(lattice, size=1, colormap=COLORMAP):
 
 
 def plot_trajectories(members: List[Person], colormap=COLORMAP):
+    """
+    Plots trajectories from a list of members.
+    :param members:
+    :param colormap:
+    :return:
+    """
     max_marker_size = 50
     cmap = plt.get_cmap(colormap, len(members))
     for m, member in enumerate(members):
@@ -74,4 +81,19 @@ def plot_trajectories(members: List[Person], colormap=COLORMAP):
         values = np.array(list(site_freq.values()))
         sizes = max_marker_size * values / values.max()
         plt.scatter(x, y, color=cmap(m), s=sizes, marker='o')
+    plt.show()
+
+
+def plot_person_distribution(person: Person, distribution_name, max_val=250, colormap=COLORMAP):
+    """
+    Plots a distribution that is a property of an individual.
+    :param max_val:
+    :param person:
+    :param distribution_name: String that is the property name of the cts random variable object.
+    :param colormap:
+    :return:
+    """
+    domain = np.linspace(0, max_val, max_val * 5)
+    pdf = person.__getattribute__(distribution_name).pdf(domain)
+    plt.plot(domain, pdf)
     plt.show()
