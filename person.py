@@ -14,10 +14,11 @@ class Person:
     def __init__(self, lattice: Lattice, seed: Coordinate, rho=0.6, gamma=0.21):
         self.lattice = lattice
         self.seed = seed
-
+        self.clock = 0
         self.rho = rho
         self.gamma = gamma
         self.length_distribution = TruncatedLevy(beta=0.9, k=25)
+        self.time_distribution = TruncatedLevy(beta=0.5, k=17, x0=0)
         self.visited_freq = dict()
         self.visited_freq[seed] = 1
         self.trajectory = [seed]
@@ -37,7 +38,6 @@ class Person:
     def preferential_return(self):
         """
         Return to a known location according to Zipfs law, bookkeeping included.
-        TODO convert to coordinate type.
         :return: Coordinate that has been returned to.
         """
         coords = np.array(list(self.visited_freq.keys()))
@@ -75,6 +75,13 @@ class Person:
         else:
             self.preferential_return()
 
-    def run(self, n=50):
-        for _ in range(n):
-            self.step()
+    def run(self, time_steps=50):
+        t = 0
+        next_jump = 0
+        for _ in range(time_steps):
+            if t >= next_jump:
+                self.step()
+                next_jump = t + self.time_distribution.rvs(size=1)
+            else:
+                self.visit(self.trajectory[-1])
+            t += 1
