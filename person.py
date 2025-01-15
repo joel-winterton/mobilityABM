@@ -40,9 +40,13 @@ class Person:
         Return to a known location according to Zipfs law, bookkeeping included.
         :return: Coordinate that has been returned to.
         """
-        coords = np.array(list(self.visited_freq.keys()))
-        vals = np.array(list(self.visited_freq.values()))
-        probabilities = vals / np.sum(vals)
+        # Sort visits into descending order
+        items = sorted(list(self.visited_freq.items()), key=lambda x: x[1], reverse=True)
+        coords = [item[0] for item in items]
+
+        probs_prop = 1 / np.arange(1, len(items) + 1)
+        probabilities = probs_prop / probs_prop.sum()
+
         next_coord = np.random.choice(coords, size=1, p=probabilities).flatten()[0]
         self.visit(next_coord)
         return next_coord
