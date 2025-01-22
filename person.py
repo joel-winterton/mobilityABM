@@ -23,17 +23,17 @@ class Person:
         self.visited_freq[seed] = 1
         self.trajectory = [seed]
 
-    def visit(self, coords):
+    def visit(self, origin, destination):
         """
         Visit a location and do the bookkeeping.
         :param coords: Coordinates of the location to visit.
         :return:
         """
-        if coords in self.visited_freq:
-            self.visited_freq[coords] += 1
+        if destination in self.visited_freq:
+            self.visited_freq[destination] += 1
         else:
-            self.visited_freq[coords] = 1
-        self.trajectory.append(coords)
+            self.visited_freq[destination] = 1
+        self.trajectory.append(destination)
 
     def preferential_return(self):
         """
@@ -48,7 +48,7 @@ class Person:
         probabilities = probs_prop / probs_prop.sum()
 
         next_coord = np.random.choice(coords, size=1, p=probabilities).flatten()[0]
-        self.visit(next_coord)
+        self.visit(self.trajectory[-1], next_coord)
         return next_coord
 
     def explore(self):
@@ -64,7 +64,7 @@ class Person:
             patches = self.lattice.funnel(self.trajectory[-1], step_size)
 
         chosen_coord = np.random.choice(patches)
-        self.visit(chosen_coord)
+        self.visit(self.trajectory[-1], chosen_coord)
         return chosen_coord
 
     def step(self):
@@ -73,7 +73,7 @@ class Person:
         :return:
         """
         uniform = np.random.default_rng().uniform()
-        p_explore = self.rho * len(self.visited_freq.keys()) ** self.gamma
+        p_explore = self.rho * len(self.visited_freq.keys()) ** -self.gamma
         if uniform < p_explore:
             self.explore()
         else:
@@ -87,5 +87,5 @@ class Person:
                 self.step()
                 next_jump = t + self.time_distribution.rvs(size=1)
             else:
-                self.visit(self.trajectory[-1])
+                self.visit(self.trajectory[-1], self.trajectory[-1])
             t += 1

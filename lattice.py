@@ -81,10 +81,11 @@ Lattice class
 
 
 class Lattice:
-    def __init__(self, width: int):
+    def __init__(self, width: int, time_steps: int = 100):
         assert (width > 0 & width % 2 == 0)
         self.r = width
         self.c = width
+        self.population = np.zeros((time_steps, self.r, self.c), dtype=int)
 
         self.grid = np.zeros((self.r, self.c))
 

@@ -15,10 +15,12 @@ FIGURE_SIZE = (15, 15)
 DPI = 300
 
 
-def plot_lattice(lattice, size=1, colormap=COLORMAP):
+def plot_lattice(lattice, size=1, colormap=COLORMAP, max_threshold=200, title=None):
     """
     Plots heatmap from lattice values stored in offset coordinates.
     For reasons unknown, I can't get matplotlib to just do this in hexbins.
+    :param title: Title of plot
+    :param max_threshold: Maximum number to display.
     :param size: Outer circular radius of each hexagon.
     :param colormap: Colormap to use on values.
     :param lattice:
@@ -30,7 +32,10 @@ def plot_lattice(lattice, size=1, colormap=COLORMAP):
 
     # Colours
     cmap = plt.get_cmap(colormap)
-    norm = colors.Normalize(vmin=0, vmax=lattice.max())
+    norm = colors.Normalize(vmin=0, vmax=min(max_threshold, lattice.max()))
+
+    lattice[lattice >= max_threshold] = max_threshold
+
     color_list = cmap(norm(lattice))
 
     fig.colorbar(cm.ScalarMappable(norm=norm, cmap=cmap),
@@ -52,6 +57,8 @@ def plot_lattice(lattice, size=1, colormap=COLORMAP):
     ax.set_xticks([])
     ax.set_yticks([])
     plt.autoscale(enable=True)
+    if title:
+        plt.title(title)
     plt.show()
 
 
@@ -62,6 +69,7 @@ def plot_trajectories(members: List[Person], colormap=COLORMAP):
     :param colormap:
     :return:
     """
+    fig, ax = plt.subplots(1, figsize=FIGURE_SIZE, dpi=DPI)
     max_marker_size = 50
     cmap = plt.get_cmap(colormap, len(members))
     for m, member in enumerate(members):
@@ -75,12 +83,12 @@ def plot_trajectories(members: List[Person], colormap=COLORMAP):
             else:
                 site_freq[destination] = 1
 
-            plt.plot([origin[0], destination[0]], [origin[1], destination[1]], '-', alpha=0.3, color=cmap(m))
+            ax.plot([origin[0], destination[0]], [origin[1], destination[1]], '-', alpha=0.3, color=cmap(m))
 
         x, y = zip(*list(site_freq.keys()))
         values = np.array(list(site_freq.values()))
         sizes = max_marker_size * values / values.max()
-        plt.scatter(x, y, color=cmap(m), s=sizes, marker='o')
+        ax.scatter(x, y, color=cmap(m), s=sizes, marker='o')
     plt.show()
 
 
