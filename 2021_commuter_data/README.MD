@@ -1,3 +1,11 @@
+# Deprecated (see 2011 instead)
+2021 data was preliminarily used for a commuter flow matrix. 2021 was a weird year, especially for a census, see here: 
+https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/methodologies/traveltoworkqualityinformationforcensus2021
+
+As such, the data from 2011 was deemed more reliable, so was used. This is here so I can switch all relevant work over to 2011, and still have 2021 data for later (might be interesting to contrast models on both matrices.
+
+# 2021 Commuter Data
+
 Commuting data is preprocessed in a Colab notebook from a previous project on kernel homogeneity. The original data sources are below, as well as a link to the notebook.
 
 **Commuter flow data:**
