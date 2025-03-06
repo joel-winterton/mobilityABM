@@ -5,7 +5,7 @@ import matplotlib.colors as colors
 import matplotlib.cm as cm
 from matplotlib.patches import RegularPolygon
 import numpy as np
-from preferential_returns_model import Person
+from preferential_returns.preferential_returns_model import Person
 
 """
 Design variables
