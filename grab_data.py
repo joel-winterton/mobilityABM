@@ -12,7 +12,7 @@ def get_matrix(resolution='LAD'):
     if resolution == 'LAD':
         data = pd.read_csv('2011_census_data/WF02EW LAD2011.csv', index_col=0, skiprows=9)
         data.drop(data.index[range(346, len(data.index))], inplace=True)
-        return data.values
+        return data.values.astype(float)
 
 
 def get_population_sizes(resolution='LAD'):
@@ -24,4 +24,4 @@ def get_population_sizes(resolution='LAD'):
         data = pd.read_csv('2011_census_data/QS102EW LAD2011.csv', index_col=0, skiprows=8)
         data.drop(data.index[range(346, len(data.index))], inplace=True)
         # drop footer text
-        return data.values.flatten()
+        return data.values.flatten().astype(float)
