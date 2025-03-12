@@ -8,9 +8,15 @@ class Sampler:
     Baseplate sampler, infection simulation should rely on methods from this class, and each type of sampler should implement these methods.
     """
 
-    def __init__(self, od_matrix):
+    def __init__(self, od_matrix, population_sizes):
         """
         """
+        # Fix diagonals to contain all population that are not commuting
+        commuter_counts = od_matrix.sum(axis=1) - od_matrix.diagonal()
+        non_commuters = population_sizes - commuter_counts
+        np.fill_diagonal(od_matrix, non_commuters)
+        self.od_matrix = od_matrix
+        self.number_of_patches = population_sizes.size
 
     def sample(self, i):
         """
@@ -27,10 +33,8 @@ class RandomCommuterSampler(Sampler):
     individuals to only commute to one place).
     """
 
-    def __init__(self, od_matrix):
-        super().__init__(od_matrix)
-        self.od_matrix = od_matrix
-        self.number_of_patches = od_matrix.shape[0]
+    def __init__(self, od_matrix, population_sizes):
+        super().__init__(od_matrix, population_sizes)
 
     def sample(self, i):
         """
@@ -51,8 +55,8 @@ class PerfectCommuterSampler(Sampler):
     Perfect commuter sampler.
     """
 
-    def __init__(self, od_matrix):
-        super().__init__(od_matrix)
+    def __init__(self, od_matrix, population_sizes):
+        super().__init__(od_matrix, population_sizes)
         self.od_matrix = od_matrix
         self.number_of_patches = od_matrix.shape[0]
 

@@ -8,11 +8,11 @@ from movement_samplers import Sampler, RandomCommuterSampler, PerfectCommuterSam
 
 
 class Epidemic:
-    def __init__(self, movement_sampler: type(Sampler), od_matrix,
+    def __init__(self, movement_sampler: type(Sampler), od_matrix, population_sizes,
                  seed_patch=0,
-                 beta=1.8, gamma=0.3, t_max=100):
-        self.population_sizes = od_matrix.sum(axis=1)
-        self.movement_sampler = movement_sampler(od_matrix)
+                 beta=1.8, gamma=0.3, psi=0.8, t_max=100):
+        self.population_sizes = population_sizes
+        self.movement_sampler = movement_sampler(od_matrix, population_sizes)
         self.od_matrix = od_matrix
         self.number_of_patches = od_matrix.shape[0]
 
@@ -21,8 +21,8 @@ class Epidemic:
         self.r = [np.zeros(shape=(t_max, self.population_sizes[i])) for i in range(self.number_of_patches)]
 
         self.beta = beta
+        self.psi = psi
         self.gamma = gamma
-        self.psi = beta - 1
         self.t_max = t_max
         self.seed(seed_patch)
 
@@ -74,10 +74,10 @@ class Epidemic:
             s_tot[j] = self.s[j][t, :].sum()
             i_tot[j] = self.i[j][t, :].sum()
             r_tot[j] = self.r[j][t, :].sum()
-            within = self.beta * i_tot[j]
+            within = i_tot[j]
             between = exerted_foi[j]
             pop_normalise = 1 / self.population_sizes[j] if self.population_sizes[j] != 0 else 0
-            forces[j] = pop_normalise * (within + between)
+            forces[j] = self.beta * pop_normalise * (self.psi * within + (1 - self.psi) * between)
         probabilities = 1 - np.exp(-forces)
         rng = np.random.default_rng()
 
@@ -122,4 +122,4 @@ class Epidemic:
                 s[patch, t] = self.s[patch][t, :].sum()
                 i[patch, t] = self.i[patch][t, :].sum()
                 r[patch, t] = self.r[patch][t, :].sum()
-        return s, i, r
+        return s.T, i.T, r.T
